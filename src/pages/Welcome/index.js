@@ -30,22 +30,25 @@ class WelcomeScreen extends Component {
 
   login = () => {
     const { nameUser } = this.state;
+    const { navigation } = this.props;
     if (nameUser.length === 0) return;
     this.setState({ loading: true });
+    navigation.navigate('Main')
 
     try {
       this.chekUserExist(nameUser)
       const resetAction = NavigationActions.reset({
-        index: 0,//numeração indica qual rota dentro de actions deve iniciar primeiro, nesse caso temos apenas User (Poderiamos ter várias)
-        actions: [
-          NavigationActions.navigate({ routeName: 'Main' }),//uma rota que contém uma página
+        //numeração indica qual rota dentro de actions deve iniciar primeiro, nesse caso temos apenas User (Poderiamos ter várias)
+        index: 0,
+        actions: [ //uma rota que contém uma página
+          NavigationActions.navigate({ routeName: 'Main' }),
         ],
       });
-      const { navigation } = this.props
       navigation.dispatch(resetAction);
 
+
     } catch (err) {
-      this.setState({ loading: false, erroUser: `Usuário ${nameuser} não existe!` })
+      this.setState({ loading: false, erroUser: `Usuário ${nameUser} não existe!` })
     }
   }
 
@@ -72,7 +75,10 @@ class WelcomeScreen extends Component {
               onChangeText={nameUser => this.setState({ nameUser })}
             />
           </View>
-          <TouchableOpacity opacity={0.5} style={styles.button} onPress={this.login} >
+          <TouchableOpacity
+            opacity={0.5}
+            style={styles.button}
+            onPress={this.login}>
             <Text>Entar</Text>
           </TouchableOpacity>
         </View>
