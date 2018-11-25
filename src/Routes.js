@@ -19,7 +19,7 @@ const Routes = createStackNavigator({
   Welcome: { screen: WelcomeScreen },
 },
 {
-  initialRouteName: 'Main',
+  initialRouteName: 'Welcome',
 }
 )
 
