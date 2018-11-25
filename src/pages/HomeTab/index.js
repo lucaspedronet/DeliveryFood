@@ -42,7 +42,7 @@ class HomeTab extends Component {
   }
 
   state = {
-    searchInput: undefined
+    searchInput: undefined,
   }
 
   componentDidMount() {

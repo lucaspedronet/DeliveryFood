@@ -1,6 +1,12 @@
 import React, { Component } from 'react'
-import { NavigationActions } from 'react-navigation'
-import { View, Text, TextInput, StatusBar, TouchableOpacity } from 'react-native'
+import {
+  View,
+  Text,
+  TextInput,
+  StatusBar,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native'
 import styles from './styles'
 import PropTypes from 'prop-types'
 
@@ -20,48 +26,41 @@ class WelcomeScreen extends Component {
     nameUser: '',
     loading: false,
     erroUser: null,
+    user: [
+      'LucasPedro',
+      'Fernanda',
+    ]
 
-  }
-
-  chekUserExist = (nameUser) => {
-    let user = 'LucasPedro'
-    if (user === nameUser) return nameUser;
   }
 
   login = () => {
-    const { nameUser } = this.state;
+    this.setState({ loading: true })
+    const { nameUser, user } = this.state;
     const { navigation } = this.props;
-    if (nameUser.length === 0) return;
-    this.setState({ loading: true });
-    navigation.navigate('Main')
-
-    try {
-      this.chekUserExist(nameUser)
-      const resetAction = NavigationActions.reset({
-        //numeração indica qual rota dentro de actions deve iniciar primeiro, nesse caso temos apenas User (Poderiamos ter várias)
-        index: 0,
-        actions: [ //uma rota que contém uma página
-          NavigationActions.navigate({ routeName: 'Main' }),
-        ],
-      });
-      navigation.dispatch(resetAction);
-
-
-    } catch (err) {
-      this.setState({ loading: false, erroUser: `Usuário ${nameUser} não existe!` })
+    for( name of user ) {
+       if(name === nameUser){
+           navigation.navigate('Main')
+       }
+       else{
+         this.setState({ loading: false })
+         return(
+           <View>
+             <Text>Usuário não encontrado! {nameUser}</Text>
+           </View>
+         )
+       }
     }
   }
-
-
 
   render() {
     console.tron.log(this.props)
     return (
       <View style={styles.container}>
         <StatusBar barStyle="light-content" />
-        <View>
-          <Text>Delivery</Text>
-          <Text>Seja Bem-vindo</Text>
+        <View style={styles.header} >
+
+          <Text style={styles.title} >Delivery</Text>
+          <Text style={styles.context} >Seja Bem-vindo</Text>
         </View>
         <View style={styles.containerInput}>
           <View >
@@ -75,12 +74,16 @@ class WelcomeScreen extends Component {
               onChangeText={nameUser => this.setState({ nameUser })}
             />
           </View>
-          <TouchableOpacity
-            opacity={0.5}
-            style={styles.button}
-            onPress={this.login}>
-            <Text>Entar</Text>
-          </TouchableOpacity>
+          {
+            this.state.loading
+              ? <ActivityIndicator color='#FF0000' styles={styles.loading} />
+              : <TouchableOpacity
+                  opacity={0.5}
+                  style={styles.button}
+                  onPress={this.login}>
+                  <Text>Entar</Text>
+                </TouchableOpacity>
+          }
         </View>
       </View>
     )
