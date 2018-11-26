@@ -40,16 +40,21 @@ const styles = StyleSheet.create({
   },
   header: {
     alignContent: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+
   },
   context: {
     fontSize: 14,
     color: colors.white,
+    textAlign: 'center'
   },
   title: {
     fontSize: 25,
     fontWeight: 'bold',
     color: colors.white,
+    textAlign: 'center',
+    // textDecorationColor: '#333',
+    textDecorationLine: 'none'
   }
 })
 
