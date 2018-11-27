@@ -122,7 +122,7 @@ class CardapioScreen extends Component {
                 <Button transparent style={styles.buttonConteudo} onPress={this.addPrato} >
                   <Icon name="inbox" size={20} />
                 </Button>
-                <Button transparent style={styles.buttonConteudo} >
+                <Button transparent style={styles.buttonConteudo} onPress={() => navigation.navigate('Message', { restaurante }) }>
                   <Icon name="comments" size={20} />
                 </Button>
                 <Button transparent style={styles.buttonConteudo} >

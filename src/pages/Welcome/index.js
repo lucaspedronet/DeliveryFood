@@ -1,6 +1,13 @@
 import React, { Component } from 'react'
-import { NavigationActions } from 'react-navigation'
-import { View, Text, TextInput, StatusBar, TouchableOpacity } from 'react-native'
+import {
+  View,
+  Text,
+  TextInput,
+  StatusBar,
+  TouchableOpacity,
+  ActivityIndicator,
+  AsyncStorage,
+} from 'react-native'
 import styles from './styles'
 import PropTypes from 'prop-types'
 
@@ -20,67 +27,77 @@ class WelcomeScreen extends Component {
     nameUser: '',
     loading: false,
     erroUser: null,
+    user: [
+      'LucasPedro',
+      'Fernanda',
+    ]
 
   }
 
-  chekUserExist = (nameUser) => {
-    let user = 'LucasPedro'
-    if (user === nameUser) return nameUser;
-  }
-
-  login = () => {
-    const { nameUser } = this.state;
+  async componentDidMount() {
     const { navigation } = this.props;
-    if (nameUser.length === 0) return;
-    this.setState({ loading: true });
-    navigation.navigate('Main')
-
-    try {
-      this.chekUserExist(nameUser)
-      const resetAction = NavigationActions.reset({
-        //numeração indica qual rota dentro de actions deve iniciar primeiro, nesse caso temos apenas User (Poderiamos ter várias)
-        index: 0,
-        actions: [ //uma rota que contém uma página
-          NavigationActions.navigate({ routeName: 'Main' }),
-        ],
-      });
-      navigation.dispatch(resetAction);
-
-
-    } catch (err) {
-      this.setState({ loading: false, erroUser: `Usuário ${nameUser} não existe!` })
+    const nameuser = await AsyncStorage.getItem('@delivery:nameuser');
+    if (nameuser) {
+      navigation.navigate('Main')
     }
   }
 
+  login = async () => {
+    this.setState({ loading: true })
+    const { nameUser, user } = this.state;
+    const { navigation } = this.props;
 
+    for (name of user) {
+      if (name === nameUser) {
+        this.setState({ loading: false })
+
+        await AsyncStorage.setItem('@delivery:nameuser', nameUser)
+        navigation.navigate('Main')
+
+      }
+      else{
+        this.setState({ loading: false })
+      }
+    }
+  }
 
   render() {
     console.tron.log(this.props)
+    const { nameUser } = this.state;
     return (
       <View style={styles.container}>
         <StatusBar barStyle="light-content" />
-        <View>
-          <Text>Delivery</Text>
-          <Text>Seja Bem-vindo</Text>
+        <View style={styles.header} >
+          <Text style={styles.title} >Delivery</Text>
+          <Text style={styles.context} >Uma forma deliciosa de matar sua fome, interaja com seus amigos.</Text>
         </View>
         <View style={styles.containerInput}>
           <View >
             <TextInput
               style={styles.input}
-              autoCapitalize="none"
-              autoCorrect={false}
-              placeholder="Nome de Usuário"
-              underlineColorAndroid="transparent"
-              value={this.state.nameUser}
+              autoCapitalize="none" // capitar o curso do mouse automáticamente.
+              autoCorrect={false} // correção de texto automática.
+              placeholder="Nome de Usuário"// texto a que irá aparecer no input.
+              underlineColorAndroid="transparent"//tipo de input no android.
+              value={nameUser}
               onChangeText={nameUser => this.setState({ nameUser })}
+              keyboardAppearance="light" // aparencia do input.
+              keyboardType="name-phone-pad" // tipo do teclado (numeric, add-email).
+              returnKeyType='send' // button send aparecer no teclado.
+              onSubmitEditing={this.login} // chama funcão ao teclar no button send  no teclado.
+            //   onEndEditing={this.login}
             />
           </View>
-          <TouchableOpacity
-            opacity={0.5}
-            style={styles.button}
-            onPress={this.login}>
-            <Text>Entar</Text>
-          </TouchableOpacity>
+          {
+            this.state.loading
+              ? <ActivityIndicator color='#FF0000' styles={styles.loading} />
+              : <TouchableOpacity
+                  opacity={0.5}
+                  style={styles.button}
+                  onPress={this.login}>
+                  <Text>Entar</Text>
+                </TouchableOpacity>
+          }
         </View>
       </View>
     )
